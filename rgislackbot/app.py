@@ -3,10 +3,12 @@ import re
 import time
 
 from slackclient import SlackClient
+from repo_command.repo_service import RepoService
 
 # constants
 RTM_READ_DELAY = 1  # 1 second between reads
 MENTION_REGEX = "^<@(|[WU].+?)>(.*)"
+repo_service = RepoService()
 
 
 def run():
@@ -62,6 +64,8 @@ def handle_command(slack_client, command, channel):
     # This is where you start to implement more commands!
     if command.startswith("HI"):
         response = "Sure...write some more code then I can do that!"
+    elif command.startswith("repo"):
+        response = repo_service.start_command(command)
 
     # Sends the response back to the channel
     slack_client.api_call(
