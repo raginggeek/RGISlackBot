@@ -13,6 +13,7 @@ def run():
     """
     main executable loop, will continue to read events off the stack and feed the dispatcher until exited.
     """
+    print("Using token: " + os.environ.get('SLACK_BOT_TOKEN'))
     # instantiate the slack client
     slack_client = SlackClient(os.environ.get('SLACK_BOT_TOKEN'))
 
