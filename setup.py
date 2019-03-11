@@ -1,6 +1,6 @@
-from setuptools import setup
+import setuptools
 
-setup(
+setuptools.setup(
     name='RGISlackBot',
     version='0.0.1',
     packages=['venv.Lib.site-packages.idna', 'venv.Lib.site-packages.certifi', 'venv.Lib.site-packages.chardet',

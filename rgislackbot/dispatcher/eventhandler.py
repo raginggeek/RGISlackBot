@@ -1,4 +1,5 @@
 import re
+from ..dellystuff import BF5Stats
 
 
 class EventHandler:
@@ -42,18 +43,19 @@ class EventHandler:
             Executes bot command if the command is known
         """
         # Default response is help text for the user
-        default_response = "Not sure what you mean. Try *{}*.".format("HI")
+        # default_response = "Not sure what you mean. Try *{}*.".format("HI")
 
         # Finds and executes the given command, filling in response
-        response = None
+        # response = None
 
         # TODO: we need to make the code more robust and route items in command lists to their appropriate handlers
-        if command.startswith("HI"):
-            response = "Sure...write some more code then I can do that!"
+        if command.startswith("BF5"):
+            # Pass in the command and slack connection and the class can parse it from there
+            bf5 = BF5Stats.BF5DataHandler
+            bf5.handle_bf5_request(self.slack_client, command, channel)
 
-        # Sends the response back to the channel
-        self.slack_client.api_call(
+        ''' self.slack_client.api_call(
             "chat.postMessage",
             channel=channel,
             text=response or default_response
-        )
+        )'''
