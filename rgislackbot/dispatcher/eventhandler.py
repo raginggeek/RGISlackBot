@@ -1,5 +1,6 @@
 import re
-from ..dellystuff import BF5Stats
+
+from rgislackbot.dellystuff.bf5stats import BF5DataHandler
 
 
 class EventHandler:
@@ -10,6 +11,7 @@ class EventHandler:
         # TODO: to which module.
         self.username = username
         self.slack_client = slack_client
+        self.bf5 = None
 
     def handle_events(self, events):
         command, channel = self.parse_bot_commands(events)
@@ -51,8 +53,9 @@ class EventHandler:
         # TODO: we need to make the code more robust and route items in command lists to their appropriate handlers
         if command.startswith("BF5"):
             # Pass in the command and slack connection and the class can parse it from there
-            bf5 = BF5Stats.BF5DataHandler
-            bf5.handle_bf5_request(self.slack_client, command, channel)
+            if self.bf5 == None:
+                self.bf5 = BF5DataHandler(self.slack_client)
+            self.bf5.handle_bf5_request(command, channel)
 
         ''' self.slack_client.api_call(
             "chat.postMessage",
