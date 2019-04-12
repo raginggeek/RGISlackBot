@@ -1,14 +1,24 @@
 import re
+from pydoc import locate
+
+from rgislackbot.dispatcher.dispatchconfig import DispatchConfig
 
 
 class EventHandler:
     MENTION_REGEX = "^<@(|[WU].+?)>(.*)"
+    CONFIG_ELEMENT = "dispatcher"
 
-    def __init__(self, username, slack_client):
-        # TODO: initialize some dictionaries by reading config files or something to establish what commands belong
-        # TODO: to which module.
+    def __init__(self, username, slack_client, config):
+        """
+        :param str username:
+        :param Slack_Client slack_client:
+        :param Configurator config:
+        """
         self.username = username
         self.slack_client = slack_client
+        self.config = config
+        self.dispatch_config = DispatchConfig(config.get_config(self.CONFIG_ELEMENT))
+        self.handlers = {}
 
     def handle_events(self, events):
         command, channel = self.parse_bot_commands(events)
@@ -45,15 +55,21 @@ class EventHandler:
         default_response = "Not sure what you mean. Try *{}*.".format("HI")
 
         # Finds and executes the given command, filling in response
-        response = None
-
-        # TODO: we need to make the code more robust and route items in command lists to their appropriate handlers
-        if command.startswith("HI"):
-            response = "Sure...write some more code then I can do that!"
-
-        # Sends the response back to the channel
-        self.slack_client.api_call(
-            "chat.postMessage",
-            channel=channel,
-            text=response or default_response
-        )
+        handler = self.dispatch_config.get_handler_by_command(command.split(None, 1)[0])
+        if handler is None:
+            print("unrecognized command detected: " + command.split(None, 1)[0])
+            # Sends the response back to the channel
+            self.slack_client.api_call(
+                "chat.postMessage",
+                channel=channel,
+                text=default_response
+            )
+        else:
+            print("using: " + handler["fullpath"] + " to handle the request")
+            if handler["class"] in self.handlers:
+                self.handlers[handler["class"]].handle_command(command, channel)
+            else:
+                cls = locate(handler["fullpath"])
+                print(cls)
+                self.handlers[handler["class"]] = cls(self.slack_client, self.config)
+                self.handlers[handler["class"]].handle_command(command, channel)

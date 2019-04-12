@@ -1,0 +1,14 @@
+{
+  "dispatcher": {
+    "handlers": [
+      {
+        "package": "rgislackbot.demo",
+        "module": "demo",
+        "class": "Demo",
+        "commands": [
+          "HI"
+        ]
+      }
+    ]
+  }
+}
